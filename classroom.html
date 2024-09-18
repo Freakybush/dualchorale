@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Environment</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            text-align: center; /* Center align text */
+        }
+
+        h1 {
+            font-size: 50px; /* Increased font size for heading */
+            margin-bottom: 20px; /* Space below heading */
+        }
+
+        .button-grid {
+            display: flex;
+            flex-direction: column; /* Arrange buttons vertically */
+            align-items: center; /* Center align buttons */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between; /* Space out buttons */
+            width: 70%; /* Set width for button container */
+            margin: 20px 0; /* Vertical spacing between button rows */
+        }
+
+        .button-image {
+            width: 100px; /* Set a fixed width for images */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        .large-button {
+            background-color: green;
+            color: white;
+            padding: 20px 40px; /* Increased padding for a bigger button */
+            border: none;
+            cursor: pointer;
+            font-size: 24px; /* Increased font size for button */
+            margin-left: 20px; /* Space between buttons */
+        }
+    </style>
+</head>
+<body>
+    <h1 id="welcomeMessage"></h1>
+    <div class="button-grid">
+        <div class="button-container">
+            <div>
+                <img src="images/assignments.jpg" alt="Assignments" class="button-image">
+                <button class="large-button" onclick="window.location.href='assignment.html'">Assignments</button>
+            </div>
+            <div>
+                <img src="images/my_recordings.jpg" alt="My Recordings" class="button-image">
+                <button class="large-button" onclick="window.location.href='my_recording.html'">My Recordings</button>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <div>
+                <img src="images/my_progress.jpg" alt="My Progress" class="button-image">
+                <button class="large-button" onclick="window.location.href='progress.html'">My Progress</button>
+            </div>
+            <div>
+                <img src="images/ranking.jpg" alt="Ranking" class="button-image">
+                <button class="large-button" onclick="window.location.href='ranking.html'">Ranking of Members</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="background-image"></div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        document.getElementById('welcomeMessage').innerText = `Welcome, ${name}, we are here to make your voice the difference.`;
+    </script>
+    <div class="copyright"></div>
+        &copy; Freaky Studios
+    </div>
+</body>
+</html>

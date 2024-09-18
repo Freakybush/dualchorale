@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        h2 {
+            font-size: 50px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        label {
+            font-size: 50px;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="password"] {
+            font-size: 40px;
+            padding: 10px;
+            width: 500px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .large-green-button {
+            background-color: green;
+            color: white;
+            padding: 20px 40px;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Registration Form</h2>
+    <form id="registrationForm">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" required>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" required>
+
+        <label for="phone">Active Cell Phone Number:</label>
+        <input type="text" id="phone" required>
+
+        <label for="pinCode">Pin Code:</label>
+        <input type="password" id="pinCode" required maxlength="4" pattern="\d{4}">
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="commitment" required>
+            <label for="commitment" style="font-size: 29px; margin-left: 10px;">I will submit all recordings on time, so help me God.</label>
+        </div>
+
+        <button type="submit" class="large-green-button">Register</button>
+    </form>
+
+    <script>
+        document.getElementById('registrationForm').onsubmit = async function (event) {
+            event.preventDefault();
+
+            const firstName = document.getElementById('firstName').value;
+            const pinCode = document.getElementById('pinCode').value;
+
+            // Save user data to localStorage
+            const existingData = JSON.parse(localStorage.getItem('userData')) || [];
+            existingData.push({ firstName, pinCode });
+            localStorage.setItem('userData', JSON.stringify(existingData));
+
+            try {
+                const formData = new FormData();
+                formData.append('firstName', firstName);
+                formData.append('lastName', document.getElementById('lastName').value);
+                formData.append('phone', document.getElementById('phone').value);
+                formData.append('pinCode', pinCode);
+
+                const response = await fetch('http://localhost:3001/register', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+
+                const result = await response.text();
+                alert(result);
+                window.location.href = 'index.html'; // Redirect to homepage after registration
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to register.');
+            }
+        }
+    </script>
+
+    <div class="copyright">
+        &copy; Freaky Studios
+    </div>
+</body>
+
+</html>

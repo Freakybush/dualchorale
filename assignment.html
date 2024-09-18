@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercises</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .box {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            font-size: 18px;
+            text-align: center;
+            margin: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <h2>Daily Warm Up Exercise</h2>
+        <button class="button" onclick="window.location.href='warmup.html'">Start</button>
+    </div>
+
+    <div class="box">
+        <h2>Breath Control</h2>
+        <button class="button" onclick="window.location.href='breath_control.html'">Start</button>
+    </div>
+
+    <div class="box">
+        <h2>It is well</h2>
+        <button class="button" onclick="alert('It is well exercise started!')">Start</button>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Your Breath Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .timer {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 10px solid #007BFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .time-display {
+            font-size: 24px;
+        }
+
+        .instructions {
+            margin-top: 10px;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Test Your Breath Control</h1>
+    <div class="timer" id="timer">
+        <div class="time-display" id="timeDisplay">0</div>
+    </div>
+    <div class="instructions">Start holding on the "shh" sound to start the exercise</div>
+
+    <script>
+        let timerInterval;
+        let elapsedTime = 0;
+
+        // Request microphone access
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const analyser = audioContext.createAnalyser();
+            const microphone = audioContext.createMediaStreamSource(stream);
+            microphone.connect(analyser);
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+            function startTimer() {
+                timerInterval = setInterval(() => {
+                    elapsedTime += 100; // Increment by 100 ms
+                    document.getElementById('timeDisplay').innerText = Math.floor(elapsedTime / 1000); // Display elapsed seconds
+
+                    // Update circular timer
+                    const circumference = 10 * Math.PI; // Circumference of the circle
+                    const offset = circumference - (elapsedTime / 60000 * circumference); // 60 seconds
+                    document.getElementById('timer').style.borderColor = '#007BFF';
+                    document.getElementById('timer').style.setProperty('--offset', offset);
+                }, 100);
+            }
+
+            function checkSound() {
+                analyser.getByteFrequencyData(dataArray);
+                const soundLevel = dataArray.reduce((a, b) => a + b) / dataArray.length;
+
+                // Start the timer when sound level exceeds a threshold
+                if (soundLevel > 5) { // Adjust threshold as needed
+                    if (!timerInterval) {
+                        startTimer();
+                    }
+                } else {
+                    // Stop the timer when the sound level falls below the threshold
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                        const result = `You held for ${Math.floor(elapsedTime / 1000)} seconds`;
+                        alert(result);
+                        saveResults(result);
+                        elapsedTime = 0; // Reset elapsed time
+                        timerInterval = null; // Reset timer
+                    }
+                }
+
+                requestAnimationFrame(checkSound);
+            }
+
+            function saveResults(results) {
+                // Retrieve the user's first name from localStorage
+                const userData = JSON.parse(localStorage.getItem('userData')) || [];
+                const user = userData.find(user => user.pinCode === document.getElementById('pinCode').value);
+
+                if (user) {
+                    fetch('http://localhost:3001/save-results', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ firstName: user.firstName, results }),
+                    }).then(response => response.text())
+                      .then(result => alert(result))
+                      .catch(error => {
+                          console.error('Error:', error);
+                          alert('Failed to save results.');
+                      });
+                } else {
+                    alert('User not found.');
+                }
+            }
+
+            requestAnimationFrame(checkSound);
+        }).catch(err => {
+            console.error('Error accessing microphone', err);
+            alert('Microphone access denied. Please allow microphone access to use this feature.');
+        });
+    </script>
+</body>
+
+</html>

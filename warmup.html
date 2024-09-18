@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recorder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        audio {
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        button {
+            background-color: green;
+            color: white;
+            padding: 20px 40px;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        button.red {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <audio id="audio" controls>
+            <source src="large-audio-file.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <button id="playRecordButton">Play/Record</button>
+    </div>
+
+    <script>
+        const audio = document.getElementById('audio');
+        const button = document.getElementById('playRecordButton');
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        button.addEventListener('click', async () => {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+
+        async function startRecording() {
+            button.classList.add('red');
+            button.textContent = 'Stop Recording';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    handleRecording(audioBlob);
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+
+                audio.play();
+                audio.addEventListener('ended', () => {
+                    if (isRecording) {
+                        stopRecording();
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error accessing the microphone:', error);
+                button.classList.remove('red');
+                button.textContent = 'Play/Record';
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder) {
+                mediaRecorder.stop();
+            }
+            isRecording = false;
+            button.classList.remove('red');
+            button.textContent = 'Play/Record';
+        }
+
+        async function handleRecording(blob) {
+            const userChoice = confirm('Do you want to save the recording?');
+            if (userChoice) {
+                const formData = new FormData();
+                formData.append('recording', blob, 'recording.wav');
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        alert('Recording saved successfully.');
+                    } else {
+                        alert('Failed to save the recording.');
+                    }
+                } catch (error) {
+                    console.error('Error uploading the recording:', error);
+                    alert('Failed to upload the recording.');
+                }
+            } else {
+                alert('Recording discarded.');
+            }
+        }
+    </script>
+</body>
+
+</html>

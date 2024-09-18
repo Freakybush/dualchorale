@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        h2 {
+            font-size: 50px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        label {
+            font-size: 50px;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="password"] {
+            font-size: 40px;
+            padding: 10px;
+            width: 500px;
+            margin-bottom: 20px;
+        }
+
+        .large-green-button {
+            background-color: green;
+            color: white;
+            padding: 20px 40px;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Login Form</h2>
+    <form id="loginForm">
+        <label for="firstName">First Name:</label>
+        <select id="firstName" required></select>
+
+        <label for="pinCode">Pin Code:</label>
+        <input type="password" id="pinCode" required maxlength="4" pattern="\d{4}">
+
+        <button type="submit" class="large-green-button">Login</button>
+    </form>
+
+    <script>
+        window.onload = function () {
+            // Populate the firstName select element with stored options
+            const userData = JSON.parse(localStorage.getItem('userData')) || [];
+            const firstNameSelect = document.getElementById('firstName');
+            
+            userData.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.firstName;
+                option.textContent = user.firstName;
+                firstNameSelect.appendChild(option);
+            });
+        };
+
+        document.getElementById('loginForm').onsubmit = function (event) {
+            event.preventDefault();
+
+            const selectedFirstName = document.getElementById('firstName').value;
+            const enteredPinCode = document.getElementById('pinCode').value;
+
+            const userData = JSON.parse(localStorage.getItem('userData')) || [];
+            const user = userData.find(user => user.firstName === selectedFirstName);
+
+            if (user && user.pinCode === enteredPinCode) {
+                alert('Login successful');
+                window.location.href = 'classroom.html'; // Redirect to homepage after successful login
+            } else {
+                alert('Invalid first name or pin code');
+            }
+        };
+    </script>
+
+    <div class="copyright">
+        &copy; Freaky Studios
+    </div>
+</body>
+
+</html>
